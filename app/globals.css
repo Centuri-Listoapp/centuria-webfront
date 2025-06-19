@@ -1,26 +1,215 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #008080;
+  --secondary: #003366;
+  --background: linear-gradient(
+    to bottom,
+    var(--primary) 0%,
+    var(--primary) 5%,
+    var(--secondary) 30%,
+    var(--secondary) 100%
+  );
+  --foreground: #ffffff;
+  min-height: 100vh;
 }
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: Arial, Helvetica, sans-serif; */
+}
+body:has(.show-dialog) {
+  overflow: hidden;
+}
+.show-dialog {
+  display: block !important;
+}
+.label-secondary {
+  color: rgb(0, 51, 102, 0.7);
+}
+.bg-secondary {
+  background-color: var(--secondary);
+}
+.bg-secondary:hover {
+  opacity: 0.9;
+  transition: all 0.2s;
+}
+.header,
+main {
+  margin: 0 auto;
+  max-width: 1200px;
+  width: 90%;
+}
+.header {
+  height: 100px;
+  display: flex;
+  align-items: center;
+}
+main {
+  margin-bottom: 3rem;
+}
+.info-section {
+  display: flex;
+}
+.texts {
+  width: 70%;
+}
+.app {
+  width: 30%;
+}
+.info-title {
+  font-size: 60px;
+  line-height: 1.1;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.info-subtitle {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 36px;
+}
+.store {
+  display: flex;
+  background-color: #000000;
+  align-items: center;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+.store:hover {
+  opacity: 0.8;
+  transition: all 0.2s;
+}
+.store span {
+  margin-left: 1rem;
+}
+.store:first-of-type {
+  margin-right: 1.5rem;
+}
+.scores {
+  display: flex;
+  margin-top: 60px;
+}
+.show-mobile {
+  display: none;
+}
+.text-count {
+  font-size: 50px;
+  height: 70px;
+}
+.section,
+.about-section {
+  margin-top: 3rem;
+}
+.about-section {
+  display: flex;
+}
+.about-images {
+  width: 35%;
+  align-self: center;
+}
+.images-about {
+  position: relative;
+  margin-bottom: 140px;
+}
+.about-img {
+  width: 60%;
+  height: auto;
+}
+.image-2 {
+  position: absolute;
+  top: 120px;
+  left: 30%;
+}
+.about-texts {
+  width: 65%;
+}
+.title {
+  font-size: 50px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.about-text {
+  margin-bottom: 1rem;
+}
+.contact-options li {
+  display: flex;
+  margin-bottom: 1rem;
+}
+.contact-options li span {
+  margin-left: 0.5rem;
+}
+@media (max-width: 600px) {
+  .header img {
+    height: 36px !important;
+    width: auto !important;
+  }
+  .info-title {
+    font-size: 35px;
+    line-height: 38px;
+  }
+  .info-subtitle {
+    font-size: 16px;
+  }
+  .show-mobile {
+    display: flex !important;
+  }
+  .buttons {
+    display: none;
+  }
+  .store {
+    width: 100%;
+  }
+  .store:first-of-type {
+    margin-right: 0;
+  }
+  .scores {
+    margin-top: 1rem;
+    display: none;
+  }
+  .text-count {
+    font-size: 35px;
+    height: 50;
+  }
+  .title {
+    font-size: 24px;
+    margin-bottom: 0.25rem;
+  }
+  .image-2 {
+    top: 40px;
+  }
+  .about-images {
+    width: 35%;
+  }
+  .about-texts {
+    width: 75%;
+  }
+  .contact-options li {
+    margin-bottom: 0.5rem;
+  }
+}
+.input-error {
+  font-size: 12px;
+  color: #ba1a1a;
+  margin: 0;
+}
+.not-found {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 1rem;
+  flex-direction: column;
+}
+.not-found h2 {
+  font-size: 24px;
+  font-weight: bold;
 }
