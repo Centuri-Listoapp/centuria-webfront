@@ -21,14 +21,12 @@ export default async function Home(props: any) {
 
   return (
     <>
-      <div className="header">
+      {/* <div className="header">
         <Image src="/logo_dark.png" alt="logo" width={120} height={37.03} />
-      </div>
-      <main>
+      </div> */}
+      <main className="candidate-main">
         <div className="title-section">
-          <h1 className="title-title">
-            ¡Bienvenido a la página de tu candidato!{" "}
-          </h1>
+          <h1 className="title-title">{candidate!.promotionalMessage}</h1>
           <p className="title-text">
             Participa activamente en las campañas de tu candidato, forma parte
             de su red, encuentra las actividades y mensajes
