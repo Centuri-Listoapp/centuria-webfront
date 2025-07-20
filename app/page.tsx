@@ -4,9 +4,9 @@ import Stores from "./components/Stores";
 export default function Home() {
   return (
     <>
-      <div className="header">
+      <header className="header">
         <Image src="/logo.png" alt="logo" width={120} height={37.03} />
-      </div>
+      </header>
       <main>
         <div className="info-section">
           <div className="texts">
@@ -89,6 +89,126 @@ export default function Home() {
             lugar.
           </p>
         </div>
+        <div className="section">
+          <h1 className="title text-center">¿Qué es Centuria?</h1>
+          <p>
+            <strong>Centuria</strong> es una plataforma de movilización
+            electoral inteligente diseñada para reclutar, gestionar y
+            multiplicar activistas al servicio de una causa social o política.
+          </p>
+          <p>
+            Integra{" "}
+            <strong>Smart Data, Inteligencia Artificial, gamificación</strong> y{" "}
+            <strong>análisis territorial</strong> para transformar cada zona
+            territorial estratégica en un frente de acción organizado, y a cada
+            activista en un agente de impacto real y expansivo.
+          </p>
+          <p>
+            <strong>Centuria</strong> dirige la movilización electoral como una
+            operación estratégica, permitiendo medir en tiempo real el
+            cumplimiento de metas, el avance territorial y la expansión del
+            liderazgo político.
+          </p>
+        </div>
+        <div className="section">
+          <h1 className="title text-center">Nuestra misión</h1>
+          <p>
+            <strong>
+              "Que nadie que quiera cambiar su país se quede sin las
+              herramientas para hacerlo."
+            </strong>
+          </p>
+          <p>
+            Centuria nace con una misión clara y urgente: Empoderar a toda
+            persona con el coraje de transformar su país, dándole acceso a las
+            herramientas del siglo XXI:{" "}
+            <strong>tecnología, datos, estrategia</strong> y
+            <strong>comunidad.</strong>
+          </p>
+          <p>
+            Transformamos la <strong>energía social</strong> en{" "}
+            <strong>capacidad política real.</strong>
+          </p>
+        </div>
+        <div className="section">
+          <h1 className="title text-center">Nuestra visión</h1>
+          <p>
+            Imaginamos una América Latina donde cualquier ciudadano comprometido
+            con una causa pueda construir mayorías, ganar elecciones y gobernar
+            con legitimidad.
+          </p>
+          <p>
+            Queremos ser la plataforma líder en{" "}
+            <strong>innovación política de base</strong>, empoderando a millones
+            de activistas, líderes sociales y ciudadanos a través de tecnología
+            de organización, IA, Smart Data y movilización electoral.
+          </p>
+        </div>
+        <div className="section">
+          <h1 className="title text-center">¿Qué permite hacer Centuria?</h1>
+          <p>
+            Centuria es una herramienta integral que le da superpoderes a
+            cualquier equipo de campaña o movimiento político desde la base. Sus
+            principales funciones incluyen:
+          </p>
+          <p>
+            ● 🔗 <strong>Construcción de redes:</strong> Visualiza el
+            crecimiento y la expansión de cada activista y su red.{" "}
+          </p>
+          <p>
+            ● ✅ <strong>Verificación antifraude:</strong> Garantiza que los
+            datos de crecimiento y movilización sean reales.
+          </p>
+          <p>
+            ● 🏆 <strong>Gamificación del desempeño:</strong> Mide, motiva y
+            reconoce el esfuerzo de cada activista.
+          </p>
+          <p>
+            ● 📲 <strong>Difusión y tracking de mensajes:</strong> Distribuye
+            contenidos clave y mide su impacto en redes sociales.
+          </p>
+          <p>
+            ● 📍 <strong>Geolocalización de actividades:</strong> Controla en
+            tiempo real el cumplimiento de metas en zonas objetivo.
+          </p>
+          <p>
+            ● 🗳{" "}
+            <strong>
+              Seguimiento por centro de votación o zona estratégica:
+            </strong>{" "}
+            Comprueba la organización y expansión en cada punto del territorio.
+          </p>
+          <p>
+            ● 💬 <strong>Whatsapp hiperlocalizado:</strong> Conecta a votantes y
+            activistas según su centro de votación específico.
+          </p>
+          <p>
+            ● 🤖 <strong>IA + Smart Data para decisiones:</strong> Toma mejores
+            decisiones de acción política con inteligencia artificial basada en
+            datos.
+          </p>
+        </div>
+        <hr />
+        <div className="section">
+          <p>
+            <strong>Centuria</strong> es más que una plataforma:{" "}
+          </p>
+          <p>Es el cerebro digital de una campaña territorial moderna.</p>
+          <p>Una herramienta para construir poder desde las raíces.</p>
+          <p>Construye tu capital político palpable y cuantificable.</p>
+          <p>Tecnología, datos y estrategia al servicio de tu causa.</p>
+          <p>
+            Tú ejército de activistas organizado, geolocalizado y operativo: en
+            la calle y desde su smartphone.
+          </p>
+        </div>{" "}
+        <hr />
+        <div className="section">
+          <p>
+            <strong>Centuria es tu ventaja estratégica.</strong>
+          </p>
+        </div>
+        <hr />
         <div className="section">
           <h1 className="title">Datos de contacto</h1>
           <ul className="contact-options">

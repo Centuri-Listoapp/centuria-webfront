@@ -51,6 +51,11 @@ export default async function Home(props: any) {
           </div>
         </div>
       </main>
+      <footer className="footer">
+        <a href="/">
+          <Image src="/logo.png" alt="logo" width={120} height={37.03} />
+        </a>
+      </footer>
     </>
   );
 }
