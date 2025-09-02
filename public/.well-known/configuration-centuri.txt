@@ -1,0 +1,17 @@
+DOCUMENTATION: https://docs.flutter.dev/ui/navigation/deep-linking
+
+* DEEP LINK (los archivos deben ser visibles en la url)
+IOS:
+<webdomain>/.well-known/apple-app-site-association
+ANDROID
+<webdomain>/.well-known/assetlinks.json
+
+link: <webdomain>/referred-code?code={code}
+
+Ejemplo:
+IOS:
+https://deep-link-mat.netlify.app/.well-known/apple-app-site-association
+ANDROID
+https://deep-link-mat.netlify.app/.well-known/assetlinks.json
+
+link: https://deep-link-mat.netlify.app/referred-code?code=Njg2MzIwOTU=
