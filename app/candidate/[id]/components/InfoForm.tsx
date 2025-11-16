@@ -8,13 +8,13 @@ import Dialog from "@/app/components/dialog/Dialog";
 import { useEffect, useState } from "react";
 import Button from "@/app/components/button/Button";
 import generalService from "@/app/services/generalService";
-import { CONFIG, REFERRAL_LINK } from "@/app/constants/globals";
+import { CONFIG } from "@/app/constants/globals";
 import { CandidateVotingCenter } from "@/app/models/votingCenter";
 import { getOperatingSystem } from "@/app/utils/utils";
 
 const schema = yup
   .object({
-    name: yup.string().required("Es requerido"),
+    fullName: yup.string().required("Es requerido"),
     phone: yup
       .number()
       .typeError("Debe ser un número")
@@ -41,6 +41,8 @@ export default function InfoForm(props: Props) {
   const [openInfo, setOpenInfo] = useState(false);
   const [votingCenter, setVotingCenter] = useState<CandidateVotingCenter>();
   const [votingCenters, setVotingCenters] = useState<Option[]>();
+  const [captchaToken, _] = useState(Date.now());
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     getCandidateVotingCenters();
@@ -61,12 +63,29 @@ export default function InfoForm(props: Props) {
     }
   };
 
-  const onSubmit = (data: any) => {
-    console.log("data:", data);
-    setOpenInfo(true);
-    setVotingCenter(
-      votingCenters?.find((item) => item.value == data.votingCenter)?.data
-    );
+  const onSubmit = async (data: any) => {
+    const value = {
+      ...data,
+      candidateId: props.id,
+      phone: `${data.phone}`,
+      address: {
+        country: "ES",
+      },
+      captchaToken: `${captchaToken}`,
+    };
+    console.log("onSubmit.value:", value);
+    try {
+      setIsLoading(true);
+      await generalService.createProspect(value);
+      setIsLoading(false);
+      setOpenInfo(true);
+      setVotingCenter(
+        votingCenters?.find((item) => item.value == data.votingCenter)?.data
+      );
+    } catch (error) {
+      setIsLoading(false);
+      alert("Ups ocurrio un error al enviar los datos");
+    }
   };
 
   const downloadApp = () => {
@@ -79,8 +98,9 @@ export default function InfoForm(props: Props) {
         window.open(CONFIG.APP_STORE, "_blank");
         break;
       default:
-        const url = `${REFERRAL_LINK}123`;
-        window.open(url, "_blank");
+        // const url = `${REFERRAL_LINK}123`;
+        // window.open(url, "_blank");
+        window.open(CONFIG.PLAY_STORE, "_blank");
         break;
     }
     setOpenInfo(false);
@@ -98,7 +118,7 @@ export default function InfoForm(props: Props) {
       <form className="mt-5" onSubmit={handleSubmit(onSubmit)}>
         <InputText
           label="Nombre completo"
-          name="name"
+          name="fullName"
           register={register}
           errors={errors}
         />
@@ -116,12 +136,14 @@ export default function InfoForm(props: Props) {
         />
         <InputSelect
           label="Centro de votación"
-          name="votingCenter"
+          name="votingCenterId"
           register={register}
           errors={errors}
           options={votingCenters}
         />
-        <Button type="submit">Enviar información</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Espere..." : "Enviar información"}
+        </Button>
       </form>
       <Dialog open={openInfo} onClose={() => setOpenInfo(false)}>
         <div className="info-dialog">

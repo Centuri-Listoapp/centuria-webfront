@@ -9,7 +9,7 @@ const Button = (props: Props) => {
   return (
     <button
       style={{ fontSize: "14px" }}
-      className="bg-secondary text-white py-2 px-8 rounded-full cursor-pointer mt-5"
+      className="text-white py-2 px-8 rounded-full cursor-pointer mt-5 disabled:!bg-gray-400 bg-secondary"
       {...props}
     >
       {props.children}

@@ -2,6 +2,7 @@ import { gql } from "graphql-request";
 import { graphQLClient } from "./graphql-client";
 import { CandidateData } from "../models/candidate";
 import { CandidateVotingCenterData } from "../models/votingCenter";
+import { CreateProspectDto } from "../models/createProspect.dto";
 
 class GeneralService {
   async getCandidate(id: string) {
@@ -64,6 +65,25 @@ class GeneralService {
       return data;
     } catch (error) {
       console.log("getCandidateVotingCenters.err:", error);
+      throw error;
+    }
+  }
+
+  async createProspect(input: CreateProspectDto) {
+    const query = gql`
+      mutation CreateProspect($input: CreateProspectInput!) {
+        createProspect(input: $input) {
+          success
+          message
+        }
+      }
+    `;
+    try {
+      const data = await graphQLClient.request<any>(query, { input });
+      console.log("createProspect.res:", data);
+      return data;
+    } catch (error) {
+      console.log("createProspect.err:", error);
       throw error;
     }
   }
