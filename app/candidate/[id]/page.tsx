@@ -27,10 +27,10 @@ export default async function Home(props: any) {
       <main className="candidate-main">
         <div className="title-section">
           <h1 className="title-title">{candidate!.promotionalMessage}</h1>
-          <p className="title-text">
+          {/* <p className="title-text">
             Participa activamente en las campañas de tu candidato, forma parte
             de su red, encuentra las actividades y mensajes
-          </p>
+          </p> */}
         </div>
         <div className="info-section">
           <div className="info-image">

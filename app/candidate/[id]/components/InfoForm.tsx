@@ -35,6 +35,7 @@ export default function InfoForm(props: Props) {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -43,6 +44,10 @@ export default function InfoForm(props: Props) {
   const [votingCenters, setVotingCenters] = useState<Option[]>();
   const [captchaToken, _] = useState(Date.now());
   const [isLoading, setIsLoading] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState({
+    show: false,
+    data: undefined,
+  });
 
   useEffect(() => {
     getCandidateVotingCenters();
@@ -61,6 +66,10 @@ export default function InfoForm(props: Props) {
     } catch (error) {
       alert("Ups ocurrio un error al obtener los centros de votación");
     }
+  };
+
+  const acceptTermsSubmit = (data: any) => {
+    setAcceptTerms({ data, show: true });
   };
 
   const onSubmit = async (data: any) => {
@@ -82,6 +91,7 @@ export default function InfoForm(props: Props) {
       setVotingCenter(
         votingCenters?.find((item) => item.value == data.votingCenter)?.data
       );
+      reset();
     } catch (error) {
       setIsLoading(false);
       alert("Ups ocurrio un error al enviar los datos");
@@ -111,11 +121,18 @@ export default function InfoForm(props: Props) {
     setOpenInfo(false);
   };
 
+  const goTermsConditions = () => {
+    window.open(
+      "https://wordpress-1254678-5496451.cloudwaysapps.com/privacy-policy-2/",
+      "_blank"
+    );
+  };
+
   const url = votingCenter?.contactUrl;
 
   return (
     <>
-      <form className="mt-5" onSubmit={handleSubmit(onSubmit)}>
+      <form className="mt-5" onSubmit={handleSubmit(acceptTermsSubmit)}>
         <InputText
           label="Nombre completo"
           name="fullName"
@@ -162,6 +179,37 @@ export default function InfoForm(props: Props) {
               </Button>
             </div>
           )}
+        </div>
+      </Dialog>
+      <Dialog
+        open={acceptTerms.show}
+        onClose={() => setAcceptTerms({ show: false, data: undefined })}
+      >
+        <div className="info-dialog">
+          <div
+            className="info-dialog-box"
+            style={{ width: url ? undefined : "100%" }}
+          >
+            <h1>Terminos y condiciones</h1>
+            <br />
+            <p>
+              Para continuar, debe aceptar los{" "}
+              <span
+                className="underline click"
+                onClick={() => goTermsConditions()}
+              >
+                términos y condiciones
+              </span>
+            </p>
+            <Button
+              onClick={() => {
+                setAcceptTerms({ ...acceptTerms, show: false });
+                onSubmit(acceptTerms.data);
+              }}
+            >
+              Aceptar términos y condiciones
+            </Button>
+          </div>
         </div>
       </Dialog>
     </>

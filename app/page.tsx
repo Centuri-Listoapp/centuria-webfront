@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Stores from "./components/Stores";
+import LinkTermsConditions from "./components/LinkTermsConditions";
 
 export default function Home() {
   return (
@@ -219,6 +220,9 @@ export default function Home() {
             <li>
               <Image src="/instagram.svg" alt="app" width={18} height={18} />
               <span>@Centuria100</span>
+            </li>
+            <li>
+              <LinkTermsConditions />
             </li>
           </ul>
         </div>

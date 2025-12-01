@@ -2,7 +2,7 @@
 
 :root {
   --primary: #008080;
-  --new-primary: #0066FF;
+  --new-primary: #0066ff;
   --secondary: #003366;
   --background: linear-gradient(
     to bottom,
@@ -216,4 +216,14 @@ main {
 .not-found h2 {
   font-size: 24px;
   font-weight: bold;
+}
+.term-link {
+  cursor: pointer;
+  margin: 0 !important;
+}
+.underline {
+  text-decoration: underline;
+}
+.click {
+  cursor: pointer;
 }
