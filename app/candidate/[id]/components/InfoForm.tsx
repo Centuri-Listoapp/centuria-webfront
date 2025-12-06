@@ -122,10 +122,7 @@ export default function InfoForm(props: Props) {
   };
 
   const goTermsConditions = () => {
-    window.open(
-      "https://wordpress-1254678-5496451.cloudwaysapps.com/privacy-policy-2/",
-      "_blank"
-    );
+    window.open("../../terms-conditions", "_blank");
   };
 
   const url = votingCenter?.contactUrl;
