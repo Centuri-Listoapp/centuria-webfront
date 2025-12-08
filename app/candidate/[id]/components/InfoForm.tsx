@@ -89,7 +89,7 @@ export default function InfoForm(props: Props) {
       setIsLoading(false);
       setOpenInfo(true);
       setVotingCenter(
-        votingCenters?.find((item) => item.value == data.votingCenter)?.data
+        votingCenters?.find((item) => item.value == data.votingCenterId)?.data
       );
       reset();
     } catch (error) {
@@ -183,10 +183,7 @@ export default function InfoForm(props: Props) {
         onClose={() => setAcceptTerms({ show: false, data: undefined })}
       >
         <div className="info-dialog">
-          <div
-            className="info-dialog-box"
-            style={{ width: url ? undefined : "100%" }}
-          >
+          <div className="info-dialog-box" style={{ width: "100%" }}>
             <h1>Terminos y condiciones</h1>
             <br />
             <p>
