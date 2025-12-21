@@ -82,7 +82,7 @@ export default function InfoForm(props: Props) {
       },
       captchaToken: `${captchaToken}`,
     };
-    console.log("onSubmit.value:", value);
+    console.log("onSubmit.value::", value);
     try {
       setIsLoading(true);
       await generalService.createProspect(value);
