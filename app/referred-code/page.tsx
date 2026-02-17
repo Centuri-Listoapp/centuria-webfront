@@ -13,7 +13,7 @@ export default function Home() {
             <h1 className="info-title">
               Descarga la app para poder disfrutar de "Centuria"
             </h1>
-            <Stores />
+            <Stores openStore={true} />
           </div>
           <div className="app">
             <Image src="/app.png" alt="app" width={350} height={550} />
