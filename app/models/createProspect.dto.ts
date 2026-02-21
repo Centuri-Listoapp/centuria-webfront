@@ -11,3 +11,8 @@ export interface CreateProspectDto {
 interface Address {
   country: string;
 }
+
+export interface LoginDto {
+  email: string;
+  password: string;
+}

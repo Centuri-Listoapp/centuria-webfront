@@ -47,7 +47,7 @@ export default async function Home(props: any) {
             <p className="text">
               Compártenos tus datos para ser parte de su red
             </p>
-            <InfoForm id={id} />
+            <InfoForm id={id} address={candidate.address} />
           </div>
         </div>
       </main>

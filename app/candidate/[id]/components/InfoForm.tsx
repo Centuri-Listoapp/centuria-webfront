@@ -1,5 +1,5 @@
 "use client";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import InputText from "@/app/components/InputText";
@@ -9,8 +9,10 @@ import { useEffect, useState } from "react";
 import Button from "@/app/components/button/Button";
 import generalService from "@/app/services/generalService";
 import { CONFIG } from "@/app/constants/globals";
-import { CandidateVotingCenter } from "@/app/models/votingCenter";
 import { getOperatingSystem } from "@/app/utils/utils";
+import { Address } from "@/app/models/candidate";
+import { City } from "@/app/models/states_by_country_data";
+import { CandidateWard } from "@/app/models/candidate_wards_data";
 
 const schema = yup
   .object({
@@ -22,36 +24,75 @@ const schema = yup
       .integer("Debe ser un número")
       .required("Es requerido"),
     email: yup.string().email("Debe ser un email").required("Es requerido"),
-    // votingCenter: yup.number(),
+    votingCenterId: yup.string(),
+    state: yup.string(),
+    city: yup.string(),
+    wardId: yup.string().when("$wards", {
+      is: (items?: any[]) => Array.isArray(items) && items.length > 0,
+      then: (schema) => schema.required("Es requerido"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   })
   .required();
 
 type Props = {
   id: string;
+  address: Address;
 };
 
 export default function InfoForm(props: Props) {
+  const [wards, setWards] = useState<Option[]>();
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    trigger,
   } = useForm({
     resolver: yupResolver(schema),
+    context: { wards },
   });
   const [openInfo, setOpenInfo] = useState(false);
-  const [votingCenter, setVotingCenter] = useState<CandidateVotingCenter>();
+  const [ward, setWard] = useState<CandidateWard>();
   const [votingCenters, setVotingCenters] = useState<Option[]>();
+  const [states, setStates] = useState<Option[]>();
+  const [cities, setCities] = useState<Option[]>();
   const [captchaToken, _] = useState(Date.now());
   const [isLoading, setIsLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState({
     show: false,
     data: undefined,
   });
+  const state = useWatch({
+    control,
+    name: "state",
+  });
+  const city = useWatch({
+    control,
+    name: "city",
+  });
 
   useEffect(() => {
     getCandidateVotingCenters();
+    getStatesByCountry();
+    getCandidateWards();
   }, []);
+
+  useEffect(() => {
+    trigger("wardId");
+  }, [wards]);
+
+  useEffect(() => {
+    if (!state) return;
+    changeState(state);
+  }, [state]);
+
+  useEffect(() => {
+    if (!city) return;
+    getCandidateWards();
+  }, [city]);
 
   const getCandidateVotingCenters = async () => {
     try {
@@ -61,11 +102,71 @@ export default function InfoForm(props: Props) {
           label: item.name,
           value: item.id,
           data: item,
-        }))
+        })),
       );
     } catch (error) {
       alert("Ups ocurrio un error al obtener los centros de votación");
     }
+  };
+
+  const getCandidateWards = async () => {
+    try {
+      setValue("wardId", undefined);
+      console.log("state:", state, "city:", city);
+      const stateLabel = states?.find((item) => item.value == state)?.label;
+      const cityLabel = cities?.find((item) => item.value == city)?.label;
+      const res = await generalService.getCandidateWards(
+        props.id,
+        stateLabel,
+        cityLabel,
+      );
+      setWards(
+        res.candidateWards.map((item) => ({
+          label: item.title,
+          value: item.id,
+          data: item,
+        })),
+      );
+    } catch (error) {
+      alert("Ups ocurrio un error al obtener los centros de votación");
+    }
+  };
+
+  const getStatesByCountry = async () => {
+    try {
+      const res = await generalService.getStatesByCountry(
+        props.address.country,
+      );
+      const states = res.statesByCountry.map((item) => ({
+        label: item.name,
+        value: item.code,
+        data: item.cities,
+      }));
+      setStates(states);
+      setCities(
+        props.address.state != null
+          ? getCities(states, props.address.state)
+          : [],
+      );
+    } catch (error) {
+      alert("Ups ocurrio un error al obtener los centros de votación");
+    }
+  };
+
+  const getCities = (states: Option[], code: string) => {
+    const option = states.find((item) => item.value == code)!;
+    const cities: Option[] = (option.data as City[]).map((item) => ({
+      label: item.name,
+      value: code,
+    }));
+    return cities;
+  };
+
+  const changeState = (value: string) => {
+    const cities = getCities(states!, value);
+    setValue("city", undefined);
+    setCities(cities);
+    getCandidateWards();
   };
 
   const acceptTermsSubmit = (data: any) => {
@@ -73,12 +174,15 @@ export default function InfoForm(props: Props) {
   };
 
   const onSubmit = async (data: any) => {
+    const { state, city, wardId, ...fields } = data;
     const value = {
-      ...data,
+      ...fields,
       candidateId: props.id,
       phone: `${data.phone}`,
       address: {
-        country: "ES",
+        country: props.address.country,
+        state,
+        city,
       },
       captchaToken: `${captchaToken}`,
     };
@@ -88,9 +192,7 @@ export default function InfoForm(props: Props) {
       await generalService.createProspect(value);
       setIsLoading(false);
       setOpenInfo(true);
-      setVotingCenter(
-        votingCenters?.find((item) => item.value == data.votingCenterId)?.data
-      );
+      setWard(wards?.find((item) => item.value == wardId)?.data);
       reset();
     } catch (error) {
       setIsLoading(false);
@@ -117,7 +219,7 @@ export default function InfoForm(props: Props) {
   };
 
   const openLink = () => {
-    window.open(votingCenter!.contactUrl!, "_blank");
+    window.open(ward!.whatsappLink!, "_blank");
     setOpenInfo(false);
   };
 
@@ -125,7 +227,7 @@ export default function InfoForm(props: Props) {
     window.open("../../terms-conditions", "_blank");
   };
 
-  const url = votingCenter?.contactUrl;
+  const url = ward?.whatsappLink;
 
   return (
     <>
@@ -147,6 +249,27 @@ export default function InfoForm(props: Props) {
           name="email"
           register={register}
           errors={errors}
+        />
+        <InputSelect
+          label="Estado"
+          name="state"
+          register={register}
+          errors={errors}
+          options={states}
+        />
+        <InputSelect
+          label="Municipio"
+          name="city"
+          register={register}
+          errors={errors}
+          options={cities}
+        />
+        <InputSelect
+          label="Parroquia"
+          name="wardId"
+          register={register}
+          errors={errors}
+          options={wards}
         />
         <InputSelect
           label="Centro de votación"

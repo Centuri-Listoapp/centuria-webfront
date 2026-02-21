@@ -11,10 +11,17 @@ export interface Candidate {
   locationLinks: any[];
   activitiesCount: number;
   networkMembersCount: number;
+  address: Address;
 }
 
 export interface Contact {
   phone: null;
   web: null;
   whatsapp: null;
+}
+
+export interface Address {
+  country: string;
+  state?: string;
+  city?: string;
 }

@@ -2,7 +2,10 @@ import { gql } from "graphql-request";
 import { graphQLClient } from "./graphql-client";
 import { CandidateData } from "../models/candidate";
 import { CandidateVotingCenterData } from "../models/votingCenter";
-import { CreateProspectDto } from "../models/createProspect.dto";
+import { CreateProspectDto, LoginDto } from "../models/createProspect.dto";
+import { LoginData } from "../models/login";
+import { StatesByCountryData } from "../models/states_by_country_data";
+import { CandidateWardsData } from "../models/candidate_wards_data";
 
 class GeneralService {
   async getCandidate(id: string) {
@@ -27,6 +30,11 @@ class GeneralService {
               country
               state
             }
+          }
+          address {
+            state
+            country
+            city
           }
         }
       }
@@ -59,7 +67,7 @@ class GeneralService {
     try {
       const data = await graphQLClient.request<CandidateVotingCenterData>(
         query,
-        { candidateId }
+        { candidateId },
       );
       console.log("getCandidateVotingCenters.res:", data);
       return data;
@@ -84,6 +92,110 @@ class GeneralService {
       return data;
     } catch (error) {
       console.log("createProspect.err:", error);
+      throw error;
+    }
+  }
+
+  async login(input: LoginDto) {
+    const query = gql`
+      mutation Login($input: LoginInput!) {
+        login(input: $input) {
+          refreshToken
+          token
+          user {
+            createdAt
+            dni
+            email
+            phone
+            id
+            fullName
+            referralCode
+            updatedAt
+            referredBy {
+              fullName
+              id
+            }
+            address {
+              city
+              state
+              country
+            }
+            role
+            gender
+            dateOfBirth
+          }
+        }
+      }
+    `;
+    try {
+      const data = await graphQLClient.request<LoginData>(query, { input });
+      console.log("login.res:", data);
+      return data;
+    } catch (error) {
+      console.log("login.err:", error);
+      throw error;
+    }
+  }
+
+  async getStatesByCountry(countryCode: string) {
+    const query = gql`
+      query StatesByCountry($countryCode: String!) {
+        statesByCountry(countryCode: $countryCode) {
+          cities {
+            code
+            name
+          }
+          code
+          name
+        }
+      }
+    `;
+    try {
+      const data = await graphQLClient.request<StatesByCountryData>(query, {
+        countryCode,
+      });
+      console.log("getStatesByCountry.res:", data);
+      return data;
+    } catch (error) {
+      console.log("getStatesByCountry.err:", error);
+      throw error;
+    }
+  }
+
+  async getCandidateWards(
+    candidateId: string,
+    state?: string,
+    municipality?: string,
+  ) {
+    const query = gql`
+      query CandidateWards(
+        $candidateId: ObjectID!
+        $municipality: String = ""
+        $state: String = ""
+      ) {
+        candidateWards(
+          candidateId: $candidateId
+          municipality: $municipality
+          state: $state
+        ) {
+          whatsappLink
+          title
+          state
+          municipality
+          id
+        }
+      }
+    `;
+    try {
+      const data = await graphQLClient.request<CandidateWardsData>(query, {
+        candidateId,
+        state,
+        municipality,
+      });
+      console.log("getCandidateWards.res:", data);
+      return data;
+    } catch (error) {
+      console.log("getCandidateWards.err:", error);
       throw error;
     }
   }

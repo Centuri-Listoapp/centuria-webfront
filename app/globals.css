@@ -4,6 +4,7 @@
   --primary: #008080;
   --new-primary: #0066ff;
   --secondary: #003366;
+  --secondary-darker: rgb(1, 41, 82);
   --background: linear-gradient(
     to bottom,
     var(--primary) 0%,

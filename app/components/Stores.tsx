@@ -22,17 +22,20 @@ const Stores = ({ extraClass, openStore = false }: Props) => {
   };
 
   useEffect(() => {
-    if (openStore) {
-      const so = getOperatingSystem();
-      var url: string | undefined;
-      if (so == "Android") {
-        url = CONFIG.PLAY_STORE;
-      } else if (so == "iOS") {
-        url = CONFIG.APP_STORE;
-      }
-      if (url) window!.location.href = url;
-    }
+    validateStore();
   }, []);
+
+  const validateStore = () => {
+    if (!openStore) return;
+    const so = getOperatingSystem();
+    var url: string | undefined;
+    if (so == "Android") {
+      url = CONFIG.PLAY_STORE;
+    } else if (so == "iOS") {
+      url = CONFIG.APP_STORE;
+    }
+    if (url) window!.location.href = url;
+  };
 
   return (
     <div className={`buttons ${extraClass}`}>
