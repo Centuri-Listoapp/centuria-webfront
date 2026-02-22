@@ -6,6 +6,8 @@ import { CreateProspectDto, LoginDto } from "../models/createProspect.dto";
 import { LoginData } from "../models/login";
 import { StatesByCountryData } from "../models/states_by_country_data";
 import { CandidateWardsData } from "../models/candidate_wards_data";
+import { CandidatesData } from "../models/candidates_data";
+import authService from "./authService";
 
 class GeneralService {
   async getCandidate(id: string) {
@@ -129,7 +131,9 @@ class GeneralService {
     `;
     try {
       const data = await graphQLClient.request<LoginData>(query, { input });
-      console.log("login.res:", data);
+      authService.setToken(data.login.token);
+      authService.loginData = data.login;
+      console.log("login.res:", data, authService.loginData);
       return data;
     } catch (error) {
       console.log("login.err:", error);
@@ -191,6 +195,59 @@ class GeneralService {
         candidateId,
         state,
         municipality,
+      });
+      console.log("getCandidateWards.res:", data);
+      return data;
+    } catch (error) {
+      console.log("getCandidateWards.err:", error);
+      throw error;
+    }
+  }
+
+  async getCandidates() {
+    const query = gql`
+      query Candidates($input: CandidateTypeFilterInputType = {}) {
+        candidates(input: $input) {
+          data {
+            activitiesCount
+            contact {
+              phone
+              whatsapp
+              web
+            }
+            fullName
+            id
+            networkMembersCount
+            promotionalImageUrl
+            promotionalMessage
+            isActive
+            email
+            enabledFeatures
+            phone
+            address {
+              city
+              country
+              state
+            }
+            wards {
+              id
+              municipality
+              state
+              title
+              whatsappLink
+            }
+          }
+          pages
+          total
+        }
+      }
+    `;
+    try {
+      const data = await graphQLClient.request<CandidatesData>(query, {
+        input: {
+          limit: 550,
+          skip: 0,
+        },
       });
       console.log("getCandidateWards.res:", data);
       return data;

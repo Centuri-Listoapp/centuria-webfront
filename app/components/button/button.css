@@ -1,0 +1,3 @@
+button.button-root:not([data-icon]) svg {
+  margin-right: 6px;
+}

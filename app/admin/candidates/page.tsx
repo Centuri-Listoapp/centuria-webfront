@@ -1,23 +1,145 @@
-import Image from "next/image";
+"use client";
+import SimpleCard from "@/app/components/card/SimpleCard";
+import {
+  faAdd,
+  faFile,
+  faGlobe,
+  faList,
+  faSearch,
+  faUpload,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "./candidates.css";
+import Button from "@/app/components/button/Button";
+import InputText from "@/app/components/InputText";
+import DataTable from "@/app/components/datatable/DataTable";
+import { candidateColumns } from "./configs/table-columns";
+import generalService from "@/app/services/generalService";
+import { useEffect, useRef, useState } from "react";
+import { Candidate } from "@/app/models/candidates_data";
+import authService from "@/app/services/authService";
+import SaveLocationDialog from "./components/SaveLocationDialog";
+import ListLocationDialog from "./components/ListLocationDialog";
 
 export default function Home() {
+  const query = useRef(undefined);
+  const [candidates, setCandidates] = useState<Candidate[]>();
+  const [saveLocation, setSaveLocation] = useState({
+    open: false,
+    data: undefined,
+  });
+  const [listLocation, setListLocation] = useState(false);
+
+  useEffect(() => {
+    console.log("Home.auth", authService.loginData);
+    getCandidates();
+  }, []);
+
+  const onChangeSearch = ({ target }: any) => {
+    query.current = target.value;
+  };
+
+  const registerSearch = (_: any) => {
+    return { onChange: onChangeSearch };
+  };
+
+  const getCandidates = async () => {
+    try {
+      const value = query.current;
+      console.log("getCandidates.value:", value);
+      const res = await generalService.getCandidates();
+      setCandidates(res.candidates.data);
+    } catch (error) {
+      alert("Ups ocurrio un error al obtener los centros de votación");
+    }
+  };
+
   return (
     <>
-      <header className="header">
-        <Image src="/logo.png" alt="logo" width={120} height={37.03} />
-      </header>
-      <main>
-        <div className="info-section">
-          <div className="texts">
-            <h1 className="info-title">
-              Descarga la app para poder disfrutar de "Centuria"
-            </h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <SimpleCard>
+          <div className="candidates-textlabel">
+            <FontAwesomeIcon icon={faUsers} />
+            <span>Total Candidatos</span>
           </div>
-          <div className="app">
-            <Image src="/app.png" alt="app" width={350} height={550} />
+          <h2 className="candidates-value">6</h2>
+        </SimpleCard>
+        <SimpleCard>
+          <div className="candidates-textlabel">
+            <FontAwesomeIcon icon={faGlobe} />
+            <span>Ubicaciones Geográficas</span>
           </div>
-        </div>
-      </main>
+          <p className="candidates-label">País, estado, municipio/Parroquia</p>
+          <div className="flex gap-2 flex-wrap mt-4">
+            <Button color="text">
+              <FontAwesomeIcon icon={faUpload} />
+              Subir Excel
+            </Button>
+            <Button color="text">
+              <FontAwesomeIcon icon={faUpload} />
+              Plantilla
+            </Button>
+            <Button color="text" onClick={() => setListLocation(true)}>
+              <FontAwesomeIcon icon={faList} />
+              Ver listado
+            </Button>
+            <Button
+              color="text"
+              onClick={() => setSaveLocation({ open: true, data: undefined })}
+            >
+              <FontAwesomeIcon icon={faAdd} />
+              Agregar
+            </Button>
+          </div>
+        </SimpleCard>
+      </div>
+      <div className="flex gap-2 items-start my-4">
+        <InputText
+          myClass="candidates-input-search"
+          label="Buscar candidato, correo o centro..."
+          name="search"
+          register={registerSearch as any}
+          dark={true}
+          errors={{}}
+        />
+        <Button
+          myClass="mt-5"
+          color="text"
+          icon={true}
+          onClick={() => getCandidates()}
+        >
+          <FontAwesomeIcon icon={faSearch} />
+        </Button>
+      </div>
+      <DataTable
+        columns={candidateColumns}
+        rows={candidates}
+        customColumns={{
+          actions: (_) => (
+            <div className="flex gap-1">
+              <Button color="text" icon={true}>
+                <FontAwesomeIcon icon={faFile} />
+              </Button>
+              <Button color="text" icon={true}>
+                <FontAwesomeIcon icon={faUpload} />
+              </Button>
+            </div>
+          ),
+        }}
+      />
+      <SaveLocationDialog
+        open={saveLocation.open}
+        data={saveLocation.data}
+        onClose={() => setSaveLocation({ ...saveLocation, open: false })}
+      />
+      <ListLocationDialog
+        open={listLocation}
+        onClose={() => setListLocation(false)}
+        onEdit={(value) => {
+          setSaveLocation({ open: true, data: { country: "Vo" } as any });
+        }}
+      />
     </>
   );
 }

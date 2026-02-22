@@ -4,6 +4,7 @@
   --primary: #008080;
   --new-primary: #0066ff;
   --secondary: #003366;
+  --border-color: #647383;
   --secondary-darker: rgb(1, 41, 82);
   --background: linear-gradient(
     to bottom,
@@ -35,6 +36,27 @@ body:has(.show-dialog) {
 .bg-secondary:hover {
   opacity: 0.9;
   transition: all 0.2s;
+}
+.bg-primary {
+  background-color: var(--new-primary);
+}
+.bg-primary:hover {
+  opacity: 0.9;
+  transition: all 0.2s;
+}
+.bg-text {
+  border: 1px solid var(--border-color);
+}
+.bg-text:hover {
+  border: 1px solid white;
+}
+.table-container {
+  border-radius: 14px;
+  background-color: var(--secondary);
+  border: 1px solid var(--border-color);
+}
+.table-row {
+  border-top: 1px solid var(--border-color);
 }
 .header,
 main {

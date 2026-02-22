@@ -7,6 +7,7 @@ import { useState } from "react";
 import Button from "@/app/components/button/Button";
 import generalService from "@/app/services/generalService";
 import { useRouter } from "next/navigation";
+import { loginAction } from "../utils/actions";
 
 const schema = yup
   .object({
@@ -34,6 +35,7 @@ export default function LoginForm() {
     try {
       setIsLoading(true);
       const res = await generalService.login(data);
+      await loginAction({ id: res.login.user.id, token: res.login.token });
       setIsLoading(false);
       router.push("/admin/candidates");
     } catch (error) {
@@ -60,6 +62,7 @@ export default function LoginForm() {
         dark={true}
       />
       <Button
+        myClass="login-button"
         fullWidth={true}
         type="submit"
         color="primary"

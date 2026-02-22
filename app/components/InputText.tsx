@@ -8,11 +8,12 @@ export interface Props {
   errors: any;
   dark?: boolean;
   type?: HTMLInputTypeAttribute;
+  myClass?: string;
 }
 
 export default function InputText(props: Props) {
   return (
-    <div className="mb-2">
+    <div className={"mb-2 " + props.myClass}>
       <label
         htmlFor={props.name}
         className={

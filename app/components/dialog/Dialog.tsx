@@ -9,6 +9,7 @@ type DialogProps = {
   width?: string | number;
   title?: string;
   close?: boolean;
+  myClass?: string;
 };
 
 const Dialog = (props: DialogProps) => {
@@ -39,7 +40,10 @@ const Dialog = (props: DialogProps) => {
   return (
     <div className={styles.root} ref={dialogRef} data-dialog>
       <div className={styles.backdrop} onClick={() => handleClose()}></div>
-      <div className={styles.container} style={{ maxWidth: props.width }}>
+      <div
+        className={styles.container + " " + props.myClass}
+        style={{ maxWidth: props.width }}
+      >
         {props.title && (
           <div className={styles["title-container"]}>
             <h3>{props.title}</h3>

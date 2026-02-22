@@ -1,0 +1,6 @@
+.simpleCard-root {
+  padding: 24px;
+  background-color: var(--secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+}

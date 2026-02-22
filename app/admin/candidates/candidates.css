@@ -1,0 +1,25 @@
+.candidates-textlabel {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.candidates-textlabel span {
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: 1rem;
+}
+.candidates-value {
+  font-size: 20px;
+  font-weight: bold;
+}
+.candidates-label {
+  color: #e1e1e1 !important;
+}
+.candidates-input-search {
+  max-width: 400px;
+  flex: 1;
+  margin: 0 !important;
+}
+.candidates-dialog {
+  background-color: var(--secondary) !important;
+}

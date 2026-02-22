@@ -33,7 +33,7 @@
   flex-direction: column;
 }
 .title-container {
-  padding: 16px;
+  padding: 16px 16px 0px 16px;
 }
 .title-container h3 {
   font-size: 20px;

@@ -12,19 +12,24 @@ export type Props = {
   register: UseFormRegister<any>;
   errors: Record<any, any>;
   options?: Option[];
+  dark?: boolean;
+  myClass?: string;
 };
 
 export default function InputSelect(props: Props) {
   return (
-    <div className="mb-2">
+    <div className={"mb-2 " + props.myClass}>
       <label
         htmlFor="price"
-        className="block text-sm/6 font-medium text-gray-900 label-secondary"
+        className={
+          "block text-sm/6 font-medium text-gray-200 " +
+          (!props.dark ? "label-secondary" : "")
+        }
       >
         {props.label} {props.options ? "" : "(Cargando...)"}
       </label>
       <select
-        style={{ fontSize: "14px" }}
+        style={{ fontSize: "14px", color: props.dark? 'black': 'black' }}
         defaultValue={""}
         className="block w-full rounded-md bg-white pl-3 pr-3 pt-2 pb-2 outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-cyan-800"
         {...props.register(props.name)}
