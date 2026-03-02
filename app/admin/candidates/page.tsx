@@ -87,10 +87,11 @@ export default function Home() {
   };
 
   const getCandidates = async () => {
+    setCandidates(undefined);
     try {
       const value = query.current;
       console.log("getCandidates.value:", value);
-      const res = await generalService.getCandidates();
+      const res = await generalService.getCandidates(query.current);
       setCandidates(res.candidates.data);
     } catch (error) {
       alert("Ups ocurrio un error al obtener los centros de votación");

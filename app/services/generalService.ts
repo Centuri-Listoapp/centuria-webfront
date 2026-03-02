@@ -211,7 +211,7 @@ class GeneralService {
     }
   }
 
-  async getCandidates() {
+  async getCandidates(search?: string) {
     const query = gql`
       query Candidates($input: CandidateTypeFilterInputType = {}) {
         candidates(input: $input) {
@@ -254,6 +254,7 @@ class GeneralService {
         input: {
           limit: 550,
           skip: 0,
+          search,
         },
       });
       console.log("getCandidateWards.res:", data);
