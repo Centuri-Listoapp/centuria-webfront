@@ -13,4 +13,11 @@ export interface CandidateVotingCenter {
 export interface Address {
   country: string;
   state: string;
+  city?: string;
+  coordinates?: Coordinates;
+}
+
+export interface Coordinates {
+  latitude: number;
+  longitude: number;
 }

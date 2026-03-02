@@ -6,9 +6,9 @@ type TableColum<T = any> = {
   headerName: string;
   valueFormatter?: (value: T) => React.ReactNode;
 };
-export type TableColums<T = any> = TableColum<T>[];
+export type TableColumns<T = any> = TableColum<T>[];
 type DataTableProps = {
-  columns: TableColums;
+  columns: TableColumns;
   rows: any[] | undefined;
   //   search: string[];
   onRefresh?: () => void;

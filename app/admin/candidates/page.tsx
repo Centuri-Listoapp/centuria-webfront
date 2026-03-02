@@ -14,13 +14,23 @@ import "./candidates.css";
 import Button from "@/app/components/button/Button";
 import InputText from "@/app/components/InputText";
 import DataTable from "@/app/components/datatable/DataTable";
-import { candidateColumns } from "./configs/table-columns";
+import {
+  candidateColumns,
+  locationColumns,
+  votingCentersColumns,
+} from "./configs/table-columns";
 import generalService from "@/app/services/generalService";
 import { useEffect, useRef, useState } from "react";
 import { Candidate } from "@/app/models/candidates_data";
 import authService from "@/app/services/authService";
 import SaveLocationDialog from "./components/SaveLocationDialog";
 import ListLocationDialog from "./components/ListLocationDialog";
+import { EMPTY_LOCATION } from "./configs/constants";
+import { ExcelUtils } from "@/app/utils/excel.util";
+import UploadLocationDialog from "./components/UploadLocationDialog";
+import { CandidateVotingCenter } from "@/app/models/votingCenter";
+import parseByColumns from "@/app/utils/parse-by-columns";
+import UploadCenterDialog from "./components/UploadCenterDialog";
 
 export default function Home() {
   const query = useRef(undefined);
@@ -30,6 +40,19 @@ export default function Home() {
     data: undefined,
   });
   const [listLocation, setListLocation] = useState(false);
+  const fileLocationRef = useRef<any>(undefined);
+  const [uploadLocation, setUploadLocation] = useState({
+    open: false,
+    data: undefined,
+  });
+  const [votingCenters, setVotingCenters] = useState<
+    CandidateVotingCenter[] | undefined
+  >([]);
+  const fileCenterRef = useRef<any>(undefined);
+  const [uploadCenter, setUploadCenter] = useState({
+    open: false,
+    data: undefined,
+  });
 
   useEffect(() => {
     console.log("Home.auth", authService.loginData);
@@ -44,6 +67,25 @@ export default function Home() {
     return { onChange: onChangeSearch };
   };
 
+  const getCandidateVotingCenters = async (id: string) => {
+    setVotingCenters(undefined);
+    try {
+      const res = await generalService.getCandidateVotingCenters(id);
+      setVotingCenters(res.candidateVotingCenters);
+      if (res.candidateVotingCenters.length == 0) {
+        alert("Sin datos");
+        return;
+      }
+      ExcelUtils.download(
+        parseByColumns(res.candidateVotingCenters, votingCentersColumns),
+        "centros",
+      );
+    } catch (error) {
+      setVotingCenters([]);
+      alert("Ups ocurrio un error al obtener los centros de votación");
+    }
+  };
+
   const getCandidates = async () => {
     try {
       const value = query.current;
@@ -55,6 +97,62 @@ export default function Home() {
     }
   };
 
+  const downloadLocation = () => {
+    ExcelUtils.download(EMPTY_LOCATION, "ubicacion");
+  };
+
+  const loadLocations = async (event: any) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const data = await ExcelUtils.toJson(file);
+    const columns = locationColumns.slice(0, -1);
+    if (data.length == 0) {
+      alert("Archivo sin datos");
+      return;
+    }
+    console.log("columns", columns, data[0]);
+    if (columns.some((item) => !data[0][item.headerName])) {
+      alert("Formato inválido");
+      return;
+    }
+    setUploadLocation({
+      open: true,
+      data: data.map((item) => {
+        const newObj: any = {};
+        columns.forEach((column) => {
+          newObj[column.field] = item[column.headerName];
+        });
+        return newObj;
+      }) as any,
+    });
+  };
+
+  const loadCenters = async (event: any) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const data = await ExcelUtils.toJson(file);
+    const columns = votingCentersColumns;
+    if (data.length == 0) {
+      alert("Archivo sin datos");
+      return;
+    }
+    console.log("columns", columns, data[0]);
+    if (columns.some((item) => !data[0][item.headerName])) {
+      alert("Formato inválido");
+      return;
+    }
+    setUploadCenter({
+      open: true,
+      data: data.map((item) => {
+        const newObj: any = {};
+        columns.forEach((column) => {
+          newObj[column.field] = item[column.headerName];
+        });
+        return newObj;
+      }) as any,
+    });
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -63,7 +161,7 @@ export default function Home() {
             <FontAwesomeIcon icon={faUsers} />
             <span>Total Candidatos</span>
           </div>
-          <h2 className="candidates-value">6</h2>
+          <h2 className="candidates-value">{candidates?.length ?? "---"}</h2>
         </SimpleCard>
         <SimpleCard>
           <div className="candidates-textlabel">
@@ -72,11 +170,21 @@ export default function Home() {
           </div>
           <p className="candidates-label">País, estado, municipio/Parroquia</p>
           <div className="flex gap-2 flex-wrap mt-4">
-            <Button color="text">
+            <Button
+              color="text"
+              onClick={() => fileLocationRef.current?.click()}
+            >
               <FontAwesomeIcon icon={faUpload} />
               Subir Excel
             </Button>
-            <Button color="text">
+            <input
+              type="file"
+              ref={fileLocationRef}
+              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+              style={{ display: "none" }}
+              onChange={loadLocations}
+            />
+            <Button color="text" onClick={() => downloadLocation()}>
               <FontAwesomeIcon icon={faUpload} />
               Plantilla
             </Button>
@@ -116,12 +224,29 @@ export default function Home() {
         columns={candidateColumns}
         rows={candidates}
         customColumns={{
-          actions: (_) => (
+          actions: (item) => (
             <div className="flex gap-1">
-              <Button color="text" icon={true}>
+              <Button
+                color="text"
+                icon={true}
+                onClick={() => getCandidateVotingCenters(item.id)}
+                disabled={!votingCenters}
+              >
                 <FontAwesomeIcon icon={faFile} />
               </Button>
-              <Button color="text" icon={true}>
+              <input
+                type="file"
+                ref={fileCenterRef}
+                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                style={{ display: "none" }}
+                onChange={loadCenters}
+              />
+              <Button
+                color="text"
+                icon={true}
+                disabled={!votingCenters}
+                onClick={() => fileCenterRef.current?.click()}
+              >
                 <FontAwesomeIcon icon={faUpload} />
               </Button>
             </div>
@@ -139,6 +264,16 @@ export default function Home() {
         onEdit={(value) => {
           setSaveLocation({ open: true, data: { country: "Vo" } as any });
         }}
+      />
+      <UploadLocationDialog
+        open={uploadLocation.open}
+        data={uploadLocation.data}
+        onClose={() => setUploadLocation({ ...saveLocation, open: false })}
+      />
+      <UploadCenterDialog
+        open={uploadCenter.open}
+        data={uploadCenter.data}
+        onClose={() => setUploadCenter({ ...saveLocation, open: false })}
       />
     </>
   );

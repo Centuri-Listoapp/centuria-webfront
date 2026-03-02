@@ -8,7 +8,11 @@ class AuthService {
   }
 
   get token() {
-    return localStorage.getItem("token");
+    try {
+      return localStorage?.getItem("token");
+    } catch (error) {
+      return null;
+    }
   }
 }
 

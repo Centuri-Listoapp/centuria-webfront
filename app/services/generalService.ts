@@ -8,6 +8,7 @@ import { StatesByCountryData } from "../models/states_by_country_data";
 import { CandidateWardsData } from "../models/candidate_wards_data";
 import { CandidatesData } from "../models/candidates_data";
 import authService from "./authService";
+import { SaveCandidateVotingCenterDto } from "../models/saveCandidateVotingCenterDto";
 
 class GeneralService {
   async getCandidate(id: string) {
@@ -59,9 +60,15 @@ class GeneralService {
           id
           name
           networkGoalCount
+          numberOfVoters
           address {
+            country
             city
             state
+            coordinates {
+              latitude
+              longitude
+            }
           }
         }
       }
@@ -253,6 +260,43 @@ class GeneralService {
       return data;
     } catch (error) {
       console.log("getCandidateWards.err:", error);
+      throw error;
+    }
+  }
+
+  async createLocation(input: any) {
+    return new Promise((resolve, _) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 500);
+    });
+  }
+
+  async saveCandidateVotingCenter(input: SaveCandidateVotingCenterDto) {
+    const query = gql`
+      mutation SaveCandidateVotingCenter(
+        $input: CandidateVotingCenterInputType!
+      ) {
+        saveCandidateVotingCenter(input: $input) {
+          id
+          name
+          networkGoalCount
+          contactUrl
+          address {
+            country
+            state
+            city
+          }
+          numberOfVoters
+        }
+      }
+    `;
+    try {
+      const data = await graphQLClient.request<any>(query, { input });
+      console.log("saveCandidateVotingCenter.res:", data);
+      return data;
+    } catch (error) {
+      console.log("saveCandidateVotingCenter.err:", error);
       throw error;
     }
   }
