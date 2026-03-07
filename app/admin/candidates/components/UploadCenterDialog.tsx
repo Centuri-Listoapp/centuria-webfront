@@ -32,12 +32,12 @@ const UploadCenterDialog = (props: UploadCenterDialogProps) => {
         await generalService.saveCandidateVotingCenter({
           name: item.name,
           address: {
-            country: "VE",
+            country: item.country ?? "VE",
             state: item.state,
             city: item.city,
             coordinates: {
               latitude: Number(item.latitude),
-              longitude: Number(item.latitude),
+              longitude: Number(item.longitude),
             },
           },
           networkGoalCount: item.networkGoalCount,

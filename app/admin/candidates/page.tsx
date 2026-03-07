@@ -48,7 +48,7 @@ export default function Home() {
   const [votingCenters, setVotingCenters] = useState<
     CandidateVotingCenter[] | undefined
   >([]);
-  const fileCenterRef = useRef<any>(undefined);
+  const fileCenterRef = useRef<any>({});
   const [uploadCenter, setUploadCenter] = useState({
     open: false,
     data: undefined,
@@ -128,7 +128,7 @@ export default function Home() {
     });
   };
 
-  const loadCenters = async (event: any) => {
+  const loadCenters = async (event: any, candidate: Candidate) => {
     const file = event.target.files[0];
     if (!file) return;
     const data = await ExcelUtils.toJson(file);
@@ -137,7 +137,7 @@ export default function Home() {
       alert("Archivo sin datos");
       return;
     }
-    console.log("columns", columns, data[0]);
+    console.log("columns", columns, data[0], candidate);
     if (columns.some((item) => !data[0][item.headerName])) {
       alert("Formato inválido");
       return;
@@ -145,7 +145,9 @@ export default function Home() {
     setUploadCenter({
       open: true,
       data: data.map((item) => {
-        const newObj: any = {};
+        const newObj: any = {
+          country: candidate.address.country,
+        };
         columns.forEach((column) => {
           newObj[column.field] = item[column.headerName];
         });
@@ -237,16 +239,16 @@ export default function Home() {
               </Button>
               <input
                 type="file"
-                ref={fileCenterRef}
+                ref={(el) => (fileCenterRef.current[item.id] = el) as any}
                 accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                 style={{ display: "none" }}
-                onChange={loadCenters}
+                onChange={(e) => loadCenters(e, item)}
               />
               <Button
                 color="text"
                 icon={true}
                 disabled={!votingCenters}
-                onClick={() => fileCenterRef.current?.click()}
+                onClick={() => fileCenterRef.current?.[item.id]?.click()}
               >
                 <FontAwesomeIcon icon={faUpload} />
               </Button>
