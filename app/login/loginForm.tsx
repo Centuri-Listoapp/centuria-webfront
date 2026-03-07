@@ -35,6 +35,12 @@ export default function LoginForm() {
     try {
       setIsLoading(true);
       const res = await generalService.login(data);
+      if (!["Candidate"].includes(res.login.user.role)) {
+        //Admin
+        setIsLoading(false);
+        alert(`Usuario no válido`);
+        return;
+      }
       await loginAction({ id: res.login.user.id, token: res.login.token });
       setIsLoading(false);
       router.push("/admin/candidates");
