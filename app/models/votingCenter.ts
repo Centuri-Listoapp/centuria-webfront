@@ -21,3 +21,40 @@ export interface Coordinates {
   latitude: number;
   longitude: number;
 }
+
+export interface CandidateVotingCenterImportTemplateData {
+  candidateVotingCenterImportTemplate: CandidateVotingCenterImportTemplate;
+}
+
+export interface CandidateVotingCenterImportTemplate {
+  expiresAt: Date;
+  url: string;
+}
+
+export interface ImportCandidateVotingCentersDto {
+  file: File;
+}
+
+//importCandidateVotingCenters
+export interface ImportCandidateVotingCentersData {
+  importCandidateVotingCenters: ImportCandidateVotingCenters;
+}
+
+export interface ImportCandidateVotingCenters {
+  duplicateCount: number;
+  failedCount: number;
+  processedRows: number;
+  totalRows: number;
+  unchangedCount: number;
+  updatedCount: number;
+  createdCount: number;
+  rows: Row[];
+}
+
+export interface Row {
+  message: string;
+  reasonCode: string | null;
+  rowNumber: number;
+  status: string;
+  votingCenterId: null | string;
+}

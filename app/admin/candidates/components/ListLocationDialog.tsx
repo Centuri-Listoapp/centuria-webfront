@@ -8,6 +8,7 @@ import { locationColumns } from "../configs/table-columns";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import InputSelect from "@/app/components/InputSelect";
+import { COUNTRIES } from "@/app/constants/countries";
 
 type ListLocationDialogProps = {
   open: boolean;
@@ -71,10 +72,7 @@ const ListLocationDialog = (props: ListLocationDialogProps) => {
           myClass="candidates-input-search"
           label="Selecione el país"
           name="country"
-          options={[
-            { label: "Test", value: "1" },
-            { label: "Test 2", value: "2" },
-          ]}
+          options={COUNTRIES}
           register={registerSearch as any}
           errors={{}}
           dark={true}

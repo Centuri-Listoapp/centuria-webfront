@@ -31,6 +31,7 @@ import UploadLocationDialog from "./components/UploadLocationDialog";
 import { CandidateVotingCenter } from "@/app/models/votingCenter";
 import parseByColumns from "@/app/utils/parse-by-columns";
 import UploadCenterDialog from "./components/UploadCenterDialog";
+import UploadCenter2Dialog from "./components/UploadCenter2Dialog";
 
 export default function Home() {
   const query = useRef(undefined);
@@ -80,6 +81,18 @@ export default function Home() {
         parseByColumns(res.candidateVotingCenters, votingCentersColumns),
         "centros",
       );
+    } catch (error) {
+      setVotingCenters([]);
+      alert("Ups ocurrio un error al obtener los centros de votación");
+    }
+  };
+
+  const exportCandidateVotingCenters = async (id: string) => {
+    setVotingCenters(undefined);
+    try {
+      const res = await generalService.getCandidateVotingCenterImportTemplate();
+      setVotingCenters([]);
+      window.open(res.candidateVotingCenterImportTemplate.url, "_blank");
     } catch (error) {
       setVotingCenters([]);
       alert("Ups ocurrio un error al obtener los centros de votación");
@@ -153,6 +166,26 @@ export default function Home() {
         });
         return newObj;
       }) as any,
+    });
+  };
+
+  const loadCenters2 = async (event: any, candidate: Candidate) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const data = await ExcelUtils.toJson(file);
+    const columns = ["country", "state", "municipality", "votingCenter"];
+    if (data.length == 0) {
+      alert("Archivo sin datos");
+      return;
+    }
+    console.log("columns", columns, data[0], candidate);
+    if (columns.some((item) => !data[0][item])) {
+      alert("Formato inválido");
+      return;
+    }
+    setUploadCenter({
+      open: true,
+      data: file as any,
     });
   };
 
@@ -232,7 +265,7 @@ export default function Home() {
               <Button
                 color="text"
                 icon={true}
-                onClick={() => getCandidateVotingCenters(item.id)}
+                onClick={() => exportCandidateVotingCenters(item.id)}
                 disabled={!votingCenters}
               >
                 <FontAwesomeIcon icon={faFile} />
@@ -242,7 +275,7 @@ export default function Home() {
                 ref={(el) => (fileCenterRef.current[item.id] = el) as any}
                 accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                 style={{ display: "none" }}
-                onChange={(e) => loadCenters(e, item)}
+                onChange={(e) => loadCenters2(e, item)}
               />
               <Button
                 color="text"
@@ -273,7 +306,7 @@ export default function Home() {
         data={uploadLocation.data}
         onClose={() => setUploadLocation({ ...saveLocation, open: false })}
       />
-      <UploadCenterDialog
+      <UploadCenter2Dialog
         open={uploadCenter.open}
         data={uploadCenter.data}
         onClose={() => setUploadCenter({ ...saveLocation, open: false })}

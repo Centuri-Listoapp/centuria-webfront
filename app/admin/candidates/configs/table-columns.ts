@@ -85,3 +85,22 @@ export const locationColumns: TableColumns = [
     headerName: "Acciones",
   },
 ];
+
+export const importCenterColumns: TableColumns = [
+  {
+    field: "rowNumber",
+    headerName: "Nro. fila",
+  },
+  {
+    field: "message",
+    headerName: "Mensaje",
+  },
+  {
+    field: "status",
+    headerName: "Estado",
+  },
+  {
+    field: "votingCenterId",
+    headerName: "Centro de votacion Id",
+  },
+];

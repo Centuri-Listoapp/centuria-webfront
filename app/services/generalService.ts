@@ -1,7 +1,12 @@
 import { gql } from "graphql-request";
 import { graphQLClient } from "./graphql-client";
 import { CandidateData } from "../models/candidate";
-import { CandidateVotingCenterData } from "../models/votingCenter";
+import {
+  CandidateVotingCenterData,
+  CandidateVotingCenterImportTemplateData,
+  ImportCandidateVotingCentersData,
+  ImportCandidateVotingCentersDto,
+} from "../models/votingCenter";
 import { CreateProspectDto, LoginDto } from "../models/createProspect.dto";
 import { LoginData } from "../models/login";
 import { StatesByCountryData } from "../models/states_by_country_data";
@@ -9,6 +14,7 @@ import { CandidateWardsData } from "../models/candidate_wards_data";
 import { CandidatesData } from "../models/candidates_data";
 import authService from "./authService";
 import { SaveCandidateVotingCenterDto } from "../models/saveCandidateVotingCenterDto";
+import { CONFIG } from "../constants/globals";
 
 class GeneralService {
   async getCandidate(id: string) {
@@ -298,6 +304,87 @@ class GeneralService {
       return data;
     } catch (error) {
       console.log("saveCandidateVotingCenter.err:", error);
+      throw error;
+    }
+  }
+
+  async getCandidateVotingCenterImportTemplate() {
+    const query = gql`
+      query CandidateVotingCenterImportTemplate {
+        candidateVotingCenterImportTemplate {
+          expiresAt
+          url
+        }
+      }
+    `;
+    try {
+      const data =
+        await graphQLClient.request<CandidateVotingCenterImportTemplateData>(
+          query,
+          {},
+        );
+      console.log("getCandidateVotingCenterImportTemplate.res:", data);
+      return data;
+    } catch (error) {
+      console.log("getCandidateVotingCenterImportTemplate.err:", error);
+      throw error;
+    }
+  }
+
+  async importCandidateVotingCenters(input: ImportCandidateVotingCentersDto) {
+    const query = gql`
+      mutation ImportCandidateVotingCenters($file: File!) {
+        importCandidateVotingCenters(file: $file) {
+          duplicateCount
+          failedCount
+          processedRows
+          totalRows
+          unchangedCount
+          updatedCount
+          createdCount
+          rows {
+            message
+            reasonCode
+            rowNumber
+            status
+            votingCenterId
+          }
+        }
+      }
+    `;
+    const formData = new FormData();
+
+    formData.append(
+      "operations",
+      JSON.stringify({
+        query,
+        variables: {
+          file: null,
+        },
+      }),
+    );
+
+    formData.append(
+      "map",
+      JSON.stringify({
+        "0": ["variables.file"],
+      }),
+    );
+
+    formData.append("0", input.file);
+    try {
+      const res = await fetch(CONFIG.GRAPHQL_API, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${authService.token}`,
+        },
+        body: formData,
+      });
+      const data = (await res.json()).data as ImportCandidateVotingCentersData;
+      console.log("importCandidateVotingCenters.res:", data);
+      return data;
+    } catch (error) {
+      console.log("importCandidateVotingCenters.err:", error);
       throw error;
     }
   }

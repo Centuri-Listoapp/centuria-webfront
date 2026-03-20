@@ -8,6 +8,7 @@ import generalService from "@/app/services/generalService";
 import Button from "@/app/components/button/Button";
 import InputText from "@/app/components/InputText";
 import InputSelect from "@/app/components/InputSelect";
+import { COUNTRIES } from "@/app/constants/countries";
 
 const schema = yup
   .object({
@@ -67,11 +68,19 @@ const SaveLocationDialog = (props: SaveLocationDialogProps) => {
       title={(props.data ? "Editar" : "Agregar") + " Ubicación"}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <InputText
+        {/* <InputText
           label="País"
           name="country"
           register={register}
           errors={errors}
+          dark={true}
+        /> */}
+        <InputSelect
+          label="País"
+          name="country"
+          register={register}
+          errors={errors}
+          options={COUNTRIES}
           dark={true}
         />
         <InputSelect
