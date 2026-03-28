@@ -53,6 +53,7 @@ export default function Home() {
   const [uploadCenter, setUploadCenter] = useState({
     open: false,
     data: undefined,
+    candidate: undefined,
   });
 
   useEffect(() => {
@@ -90,7 +91,8 @@ export default function Home() {
   const exportCandidateVotingCenters = async (id: string) => {
     setVotingCenters(undefined);
     try {
-      const res = await generalService.getCandidateVotingCenterImportTemplate();
+      const res =
+        await generalService.getCandidateVotingCenterImportTemplate(id);
       setVotingCenters([]);
       window.open(res.candidateVotingCenterImportTemplate.url, "_blank");
     } catch (error) {
@@ -166,6 +168,7 @@ export default function Home() {
         });
         return newObj;
       }) as any,
+      candidate: candidate as any,
     });
   };
 
@@ -186,6 +189,7 @@ export default function Home() {
     setUploadCenter({
       open: true,
       data: file as any,
+      candidate: candidate as any,
     });
   };
 
@@ -309,7 +313,8 @@ export default function Home() {
       <UploadCenter2Dialog
         open={uploadCenter.open}
         data={uploadCenter.data}
-        onClose={() => setUploadCenter({ ...saveLocation, open: false })}
+        candidate={uploadCenter.candidate}
+        onClose={() => setUploadCenter({ ...uploadCenter, open: false })}
       />
     </>
   );

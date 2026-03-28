@@ -33,6 +33,7 @@ export interface CandidateVotingCenterImportTemplate {
 
 export interface ImportCandidateVotingCentersDto {
   file: File;
+  candidateId: string;
 }
 
 //importCandidateVotingCenters

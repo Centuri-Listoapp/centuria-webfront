@@ -157,7 +157,7 @@ export default function InfoForm(props: Props) {
     const option = states.find((item) => item.value == code)!;
     const cities: Option[] = (option.data as City[]).map((item) => ({
       label: item.name,
-      value: code,
+      value: item.code,
     }));
     return cities;
   };

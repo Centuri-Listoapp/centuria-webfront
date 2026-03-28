@@ -35,7 +35,7 @@ export default function LoginForm() {
     try {
       setIsLoading(true);
       const res = await generalService.login(data);
-      if (!["Admin", "Candidate"].includes(res.login.user.role)) {
+      if (!["Admin"].includes(res.login.user.role)) {
         setIsLoading(false);
         alert(`Usuario no válido`);
         return;

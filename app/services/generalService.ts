@@ -308,10 +308,10 @@ class GeneralService {
     }
   }
 
-  async getCandidateVotingCenterImportTemplate() {
+  async getCandidateVotingCenterImportTemplate(id: string) {
     const query = gql`
-      query CandidateVotingCenterImportTemplate {
-        candidateVotingCenterImportTemplate {
+      query CandidateVotingCenterImportTemplate($candidateId: ObjectID!) {
+        candidateVotingCenterImportTemplate(candidateId: $candidateId) {
           expiresAt
           url
         }
@@ -321,7 +321,7 @@ class GeneralService {
       const data =
         await graphQLClient.request<CandidateVotingCenterImportTemplateData>(
           query,
-          {},
+          { candidateId: id },
         );
       console.log("getCandidateVotingCenterImportTemplate.res:", data);
       return data;
@@ -333,8 +333,8 @@ class GeneralService {
 
   async importCandidateVotingCenters(input: ImportCandidateVotingCentersDto) {
     const query = gql`
-      mutation ImportCandidateVotingCenters($file: File!) {
-        importCandidateVotingCenters(file: $file) {
+      mutation ImportCandidateVotingCenters($file: File!, $candidateId: ObjectID!) {
+        importCandidateVotingCenters(file: $file, candidateId: $candidateId) {
           duplicateCount
           failedCount
           processedRows
@@ -360,6 +360,7 @@ class GeneralService {
         query,
         variables: {
           file: null,
+          candidateId: null,
         },
       }),
     );
@@ -368,10 +369,12 @@ class GeneralService {
       "map",
       JSON.stringify({
         "0": ["variables.file"],
+        "1": ["variables.candidateId"],
       }),
     );
 
     formData.append("0", input.file);
+    formData.append("1", input.candidateId);
     try {
       const res = await fetch(CONFIG.GRAPHQL_API, {
         method: "POST",

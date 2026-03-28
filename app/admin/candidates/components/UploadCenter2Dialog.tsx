@@ -6,10 +6,12 @@ import { ImportCandidateVotingCenters } from "@/app/models/votingCenter";
 import Button from "@/app/components/button/Button";
 import DataTable from "@/app/components/datatable/DataTable";
 import { importCenterColumns } from "../configs/table-columns";
+import { Candidate } from "@/app/models/candidates_data";
 
 type UploadCenterDialogProps = {
   open: boolean;
-  data?: any[];
+  data?: any;
+  candidate?: Candidate;
   onClose: Function;
 };
 
@@ -23,10 +25,15 @@ const UploadCenter2Dialog = (props: UploadCenterDialogProps) => {
 
   const upload = async () => {
     try {
-      const data = props.data! as any;
-      console.log("upload.importCandidateVotingCenters:", data);
+      const data = props.data!;
+      console.log(
+        "upload.importCandidateVotingCenters:",
+        data,
+        props.candidate,
+      );
       const res = await generalService.importCandidateVotingCenters({
         file: data,
+        candidateId: props.candidate!.id,
       });
       setImportCenter(res.importCandidateVotingCenters);
     } catch (error) {
