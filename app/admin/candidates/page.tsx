@@ -14,24 +14,18 @@ import "./candidates.css";
 import Button from "@/app/components/button/Button";
 import InputText from "@/app/components/InputText";
 import DataTable from "@/app/components/datatable/DataTable";
-import {
-  candidateColumns,
-  locationColumns,
-  votingCentersColumns,
-} from "./configs/table-columns";
+import { candidateColumns, locationColumns } from "./configs/table-columns";
 import generalService from "@/app/services/generalService";
 import { useEffect, useRef, useState } from "react";
 import { Candidate } from "@/app/models/candidates_data";
 import authService from "@/app/services/authService";
 import SaveLocationDialog from "./components/SaveLocationDialog";
 import ListLocationDialog from "./components/ListLocationDialog";
-import { EMPTY_LOCATION } from "./configs/constants";
 import { ExcelUtils } from "@/app/utils/excel.util";
 import UploadLocationDialog from "./components/UploadLocationDialog";
 import { CandidateVotingCenter } from "@/app/models/votingCenter";
-import parseByColumns from "@/app/utils/parse-by-columns";
-import UploadCenterDialog from "./components/UploadCenterDialog";
 import UploadCenter2Dialog from "./components/UploadCenter2Dialog";
+import { EMPTY_LOCATION } from "./configs/constants";
 
 export default function Home() {
   const query = useRef(undefined);
@@ -55,6 +49,7 @@ export default function Home() {
     data: undefined,
     candidate: undefined,
   });
+  const [loadLocationTemplate, setLoadLocationTemplate] = useState(false);
 
   useEffect(() => {
     console.log("Home.auth", authService.loginData);
@@ -67,25 +62,6 @@ export default function Home() {
 
   const registerSearch = (_: any) => {
     return { onChange: onChangeSearch };
-  };
-
-  const getCandidateVotingCenters = async (id: string) => {
-    setVotingCenters(undefined);
-    try {
-      const res = await generalService.getCandidateVotingCenters(id);
-      setVotingCenters(res.candidateVotingCenters);
-      if (res.candidateVotingCenters.length == 0) {
-        alert("Sin datos");
-        return;
-      }
-      ExcelUtils.download(
-        parseByColumns(res.candidateVotingCenters, votingCentersColumns),
-        "centros",
-      );
-    } catch (error) {
-      setVotingCenters([]);
-      alert("Ups ocurrio un error al obtener los centros de votación");
-    }
   };
 
   const exportCandidateVotingCenters = async (id: string) => {
@@ -113,62 +89,42 @@ export default function Home() {
     }
   };
 
-  const downloadLocation = () => {
-    ExcelUtils.download(EMPTY_LOCATION, "ubicacion");
+  const downloadLocation = async () => {
+    setLoadLocationTemplate(true);
+    try {
+      const res = await generalService.getAdminCountryLocationsTemplate();
+      setLoadLocationTemplate(false);
+      window.open(res.adminCountryLocationsTemplate.url, "_blank");
+    } catch (error) {
+      setLoadLocationTemplate(false);
+      alert("Ups ocurrio un error al obtener los centros de votación");
+    }
   };
 
   const loadLocations = async (event: any) => {
     const file = event.target.files[0];
     if (!file) return;
     const data = await ExcelUtils.toJson(file);
-    const columns = locationColumns.slice(0, -1);
+    const columns = [
+      "countryCode",
+      "countryName",
+      "stateCode",
+      "stateName",
+      "municipalityCode",
+      "municipalityName",
+    ];
     if (data.length == 0) {
       alert("Archivo sin datos");
       return;
     }
     console.log("columns", columns, data[0]);
-    if (columns.some((item) => !data[0][item.headerName])) {
+    if (columns.some((item) => !data[0][item])) {
       alert("Formato inválido");
       return;
     }
     setUploadLocation({
       open: true,
-      data: data.map((item) => {
-        const newObj: any = {};
-        columns.forEach((column) => {
-          newObj[column.field] = item[column.headerName];
-        });
-        return newObj;
-      }) as any,
-    });
-  };
-
-  const loadCenters = async (event: any, candidate: Candidate) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    const data = await ExcelUtils.toJson(file);
-    const columns = votingCentersColumns;
-    if (data.length == 0) {
-      alert("Archivo sin datos");
-      return;
-    }
-    console.log("columns", columns, data[0], candidate);
-    if (columns.some((item) => !data[0][item.headerName])) {
-      alert("Formato inválido");
-      return;
-    }
-    setUploadCenter({
-      open: true,
-      data: data.map((item) => {
-        const newObj: any = {
-          country: candidate.address.country,
-        };
-        columns.forEach((column) => {
-          newObj[column.field] = item[column.headerName];
-        });
-        return newObj;
-      }) as any,
-      candidate: candidate as any,
+      data: file as any,
     });
   };
 
@@ -224,7 +180,11 @@ export default function Home() {
               style={{ display: "none" }}
               onChange={loadLocations}
             />
-            <Button color="text" onClick={() => downloadLocation()}>
+            <Button
+              color="text"
+              onClick={() => downloadLocation()}
+              disabled={loadLocationTemplate}
+            >
               <FontAwesomeIcon icon={faUpload} />
               Plantilla
             </Button>

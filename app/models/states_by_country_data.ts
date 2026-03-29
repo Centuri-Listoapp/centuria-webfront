@@ -12,3 +12,12 @@ export interface City {
   code: string;
   name: string;
 }
+export interface CountriesData {
+  countries: Country[];
+}
+
+export interface Country {
+  code: string;
+  name: string;
+  states: StatesByCountry[];
+}

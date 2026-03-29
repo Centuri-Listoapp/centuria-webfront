@@ -1,45 +1,43 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dialog from "@/app/components/dialog/Dialog";
 import generalService from "@/app/services/generalService";
+import { ImportCountryLocations } from "@/app/models/votingCenter";
+import DataTable from "@/app/components/datatable/DataTable";
+import { importLocationColumns } from "../configs/table-columns";
+import Button from "@/app/components/button/Button";
 
 type UploadLocationDialogProps = {
   open: boolean;
-  data?: any[];
+  data?: any;
   onClose: Function;
 };
 
 const UploadLocationDialog = (props: UploadLocationDialogProps) => {
-  const isCancel = useRef(false);
-  const [count, setCount] = useState(0);
+  const [importCenter, setImportCenter] = useState<ImportCountryLocations>();
 
   useEffect(() => {
-    setCount(0);
     if (props.data) upload();
   }, [props.data]);
 
   const upload = async () => {
-    const errors: string[] = [];
-    var newData = [...props.data!];
-    let count = 0;
-    isCancel.current = false;
-    for (const item of props.data!) {
-      if (isCancel.current) break;
-      const body = {
-        ...item,
-      };
-      try {
-        await generalService.createLocation(body);
-        count++;
-        setCount(count);
-        newData = newData.filter((value) => value != item);
-      } catch (error) {
-        errors.push(`${item.state}. ${(error as any).message}`);
-      }
+    try {
+      const data = props.data!;
+      console.log("upload.importCountryLocations:", data);
+      const res = await generalService.importCountryLocations({
+        file: data,
+      });
+      setImportCenter(res.importCountryLocations);
+    } catch (error) {
+      props.onClose();
+      alert("Ups ocurrio un error al subir los centros de votación");
     }
-    alert(`${count} registros cargados`);
-    if (errors.length > 0) alert(errors.join("\n"));
+  };
+
+  const handleClose = () => {
+    if (!importCenter) return;
     props.onClose();
+    setImportCenter(undefined);
   };
 
   return (
@@ -47,15 +45,48 @@ const UploadLocationDialog = (props: UploadLocationDialogProps) => {
       myClass="candidates-dialog"
       open={props.open}
       onClose={() => {
-        isCancel.current = true;
-        props.onClose();
+        handleClose();
       }}
-      title="Subiendo..."
+      width={960}
+      title="Subir"
     >
-      <p className="mb-2">Espere a que se suban todos</p>
-      <h3 className="candidates-count">
+      {!importCenter ? (
+        <p className="mb-2">Espere a que se suban todos</p>
+      ) : (
+        <div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4">
+            <span>
+              <strong>Duplicados:</strong> {importCenter.duplicateCount}
+            </span>
+            <span>
+              <strong>Fallidos:</strong> {importCenter.failedCount}
+            </span>
+            <span>
+              <strong>Creados:</strong> {importCenter.createdCount}
+            </span>
+            <span>
+              <strong>Actualizados:</strong> {importCenter.updatedCount}
+            </span>
+            <span>
+              <strong>Recuento sin cambios:</strong>{" "}
+              {importCenter.unchangedCount}
+            </span>
+            <span>
+              <strong>Total:</strong> {importCenter.totalRows}
+            </span>
+          </div>
+          <DataTable columns={importLocationColumns} rows={importCenter.rows} />
+          <div className="flex justify-end mt-4">
+            <Button color="text" onClick={handleClose}>
+              Aceptar
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* <h3 className="candidates-count">
         {count} / {props.data?.length}
-      </h3>
+      </h3> */}
     </Dialog>
   );
 };

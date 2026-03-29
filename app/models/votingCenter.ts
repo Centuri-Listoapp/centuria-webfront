@@ -36,7 +36,6 @@ export interface ImportCandidateVotingCentersDto {
   candidateId: string;
 }
 
-//importCandidateVotingCenters
 export interface ImportCandidateVotingCentersData {
   importCandidateVotingCenters: ImportCandidateVotingCenters;
 }
@@ -59,3 +58,22 @@ export interface Row {
   status: string;
   votingCenterId: null | string;
 }
+
+export interface AdminCountryLocationsTemplateData {
+  adminCountryLocationsTemplate: AdminCountryLocationsTemplate;
+}
+
+export interface AdminCountryLocationsTemplate {
+  expiresAt: Date;
+  url: string;
+}
+
+export interface ImportCountryLocationsDto {
+  file: File;
+}
+
+export interface ImportCountryLocationsData {
+  importCountryLocations: ImportCountryLocations;
+}
+
+export interface ImportCountryLocations extends ImportCandidateVotingCenters {}

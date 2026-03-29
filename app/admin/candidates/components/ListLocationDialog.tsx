@@ -7,7 +7,7 @@ import DataTable from "@/app/components/datatable/DataTable";
 import { locationColumns } from "../configs/table-columns";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import InputSelect from "@/app/components/InputSelect";
+import InputSelect, { Option } from "@/app/components/InputSelect";
 import { COUNTRIES } from "@/app/constants/countries";
 
 type ListLocationDialogProps = {
@@ -20,6 +20,7 @@ const ListLocationDialog = (props: ListLocationDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [locations, setLocations] = useState<any[]>();
   const country = useRef(undefined);
+  const countries = useRef<undefined | Option[]>(undefined);
 
   useEffect(() => {
     getLocations();
@@ -27,11 +28,32 @@ const ListLocationDialog = (props: ListLocationDialogProps) => {
 
   const getLocations = async () => {
     const value = country.current;
-    console.log("coutry:", value);
+    console.log("country:", value);
     setLocations(undefined);
     try {
-      const res = await generalService.getCandidates();
-      setLocations(res.candidates.data);
+      const res = await generalService.getCountries(value);
+      const locations: any[] = [];
+      const parsedCountries: Option[] = [];
+      for (const country of res.countries) {
+        parsedCountries.push({
+          label: country.name,
+          value: country.code,
+        });
+        for (const state of country.states) {
+          for (const city of state.cities) {
+            locations.push({
+              countryCode: country.code,
+              countryName: country.name,
+              stateCode: state.code,
+              stateName: state.name,
+              cityCode: city.code,
+              cityName: city.name,
+            });
+          }
+        }
+      }
+      if (!countries.current) countries.current = parsedCountries;
+      setLocations(locations);
     } catch (error) {
       alert("Ups ocurrio un error al obtener los datos");
     }
@@ -46,16 +68,20 @@ const ListLocationDialog = (props: ListLocationDialogProps) => {
     return { onChange };
   };
 
-  const deleteLocation = async (id: string) => {
-    console.log("deleteLocation.id:", id);
+  const deleteLocation = async (value: any) => {
+    console.log("deleteLocation.value:", value);
     setIsLoading(true);
     try {
-      const res = await generalService.getCandidates();
+      await generalService.deleteCountryMunicipality({
+        countryCode: value.countryCode,
+        stateCode: value.stateCode,
+        municipalityCode: value.cityCode,
+      });
       setIsLoading(false);
       getLocations();
     } catch (error) {
       setIsLoading(false);
-      alert("Ups ocurrio un error al obtener los eliminar");
+      alert("Ups ocurrio un error al eliminar");
     }
   };
 
@@ -72,7 +98,7 @@ const ListLocationDialog = (props: ListLocationDialogProps) => {
           myClass="candidates-input-search"
           label="Selecione el país"
           name="country"
-          options={COUNTRIES}
+          options={countries.current}
           register={registerSearch as any}
           errors={{}}
           dark={true}

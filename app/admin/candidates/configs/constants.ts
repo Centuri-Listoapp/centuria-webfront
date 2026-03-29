@@ -1,12 +1,10 @@
 export const EMPTY_LOCATION = [
   {
-    País: "Venezuela",
-    Estado: "Estado Amazonas",
-    "Municipio / Parroquia": "Maroa",
-  },
-  {
-    País: "Venezuela",
-    Estado: "Estado Bolivar",
-    "Municipio / Parroquia": "Ciudad  Guayana",
+    countryCode: "AR",
+    countryName: "Argentina",
+    stateCode: "AR-1",
+    stateName: "Provincia de Buenos Aires",
+    municipalityCode: "AR-1-0",
+    municipalityName: "Balvanera",
   },
 ];

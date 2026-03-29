@@ -69,15 +69,15 @@ export const votingCentersColumns: TableColumns<CandidateVotingCenter> = [
 
 export const locationColumns: TableColumns = [
   {
-    field: "country",
+    field: "countryName",
     headerName: "País",
   },
   {
-    field: "state",
+    field: "stateName",
     headerName: "Estado",
   },
   {
-    field: "municipality",
+    field: "cityName",
     headerName: "Municipio / Parroquia",
   },
   {
@@ -102,5 +102,13 @@ export const importCenterColumns: TableColumns = [
   {
     field: "votingCenterId",
     headerName: "Centro de votacion Id",
+  },
+];
+
+export const importLocationColumns: TableColumns = [
+  ...importCenterColumns.slice(0, importCenterColumns.length - 2),
+  {
+    field: "status",
+    headerName: "Estado",
   },
 ];
