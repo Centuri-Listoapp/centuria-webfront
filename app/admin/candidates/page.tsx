@@ -262,7 +262,7 @@ export default function Home() {
         open={listLocation}
         onClose={() => setListLocation(false)}
         onEdit={(value) => {
-          setSaveLocation({ open: true, data: { country: "Vo" } as any });
+          setSaveLocation({ open: true, data: value });
         }}
       />
       <UploadLocationDialog

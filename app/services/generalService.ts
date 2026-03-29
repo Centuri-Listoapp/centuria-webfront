@@ -24,6 +24,7 @@ import {
   SaveCandidateVotingCenterDto,
 } from "../models/saveCandidateVotingCenterDto";
 import { CONFIG } from "../constants/globals";
+import { saveCountryMunicipalityDto } from "../models/models";
 
 class GeneralService {
   async getCandidate(id: string) {
@@ -533,6 +534,31 @@ class GeneralService {
       return data;
     } catch (error) {
       console.log("deleteCountryMunicipality.err:", error);
+      throw error;
+    }
+  }
+
+  async saveCountryMunicipality(input: saveCountryMunicipalityDto) {
+    const query = gql`
+      mutation SaveCountryMunicipality(
+        $input: CountryMunicipalityInput = {
+          countryCode: ""
+          stateCode: ""
+          name: ""
+        }
+      ) {
+        saveCountryMunicipality(input: $input) {
+          code
+          name
+        }
+      }
+    `;
+    try {
+      const data = await graphQLClient.request<any>(query, { input });
+      console.log("saveCountryMunicipality.res:", data);
+      return data;
+    } catch (error) {
+      console.log("saveCountryMunicipality.err:", error);
       throw error;
     }
   }
