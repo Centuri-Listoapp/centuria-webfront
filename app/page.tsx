@@ -1,12 +1,14 @@
 import Image from "next/image";
 import Stores from "./components/Stores";
 import LinkTermsConditions from "./components/LinkTermsConditions";
+import HeaderLogin from "./components/button/HeaderLogin";
 
 export default function Home() {
   return (
     <>
       <header className="header">
         <Image src="/logo.png" alt="logo" width={120} height={37.03} />
+        <HeaderLogin />
       </header>
       <main>
         <div className="info-section">
